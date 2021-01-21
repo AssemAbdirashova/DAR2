@@ -32,15 +32,9 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Введите необходимые данные!", Toast.LENGTH_SHORT).show()
             } else if (db.checkExisting(student)) {
                 Toast.makeText(this, "Студент уже существует!", Toast.LENGTH_SHORT).show()
-                for (s in db.getStudents()!!) {
-                    Log.d("student2", "${s.name} +   ${s.surname} ")
-                }
             } else {
                 db.addStudent(student)
                 Toast.makeText(this, "Студент успешно добавлен!", Toast.LENGTH_SHORT).show()
-                for (s in db.getStudents()!!) {
-                    Log.d("student", "${s.name} +   ${s.surname} ")
-                }
                 findViewById<TextView>(R.id.amount_of_students).text = db.size().toString()
             }
 
