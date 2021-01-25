@@ -15,39 +15,54 @@ import com.example.recyclerview.R
 import com.example.recyclerview.models.Student
 
 class MainActivity : AppCompatActivity() {
+    private val db = Database.instance
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val db = Database.instance
-        findViewById<TextView>(R.id.amount_of_students).text = db.size().toString()
+        setAmountOfStudent()
 
         findViewById<Button>(R.id.add_student).setOnClickListener {
-
-            var name = findViewById<EditText>(R.id.name_of_student).text.toString()
-            var surname = findViewById<EditText>(R.id.surname_of_student).text.toString()
+            val name = findViewById<EditText>(R.id.name_of_student).text.toString()
+            val surname = findViewById<EditText>(R.id.surname_of_student).text.toString()
             val student = Student(name, surname)
-
             if (name == "" || surname == "") {
-                Toast.makeText(this, "Введите необходимые данные!", Toast.LENGTH_SHORT).show()
-            } else if (db.checkExisting(student)) {
-                Toast.makeText(this, "Студент уже существует!", Toast.LENGTH_SHORT).show()
-            } else {
+                showResponse("Нету данных")
+            }else if(db.checkExisting(student)) {
+               showResponse("Существует")
+            }else {
                 db.addStudent(student)
-                Toast.makeText(this, "Студент успешно добавлен!", Toast.LENGTH_SHORT).show()
-                findViewById<TextView>(R.id.amount_of_students).text = db.size().toString()
+                setAmountOfStudent()
+                showResponse("Добавлен")
             }
-
-            try {
-                val imm: InputMethodManager =
-                    getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
-            } catch (e: Exception) {
-            }
+            hideKeyboard()
         }
+
         findViewById<Button>(R.id.next_page).setOnClickListener {
-            var intent = Intent(this, SecondActivity::class.java)
+            val intent = Intent(this, SecondActivity::class.java)
             startActivity(intent)
         }
     }
+
+    private fun setAmountOfStudent(){
+        findViewById<TextView>(R.id.amount_of_students).text = db.size().toString()
+    }
+
+    private fun showResponse(s: String?){
+        when(s){
+            "Нету данных" -> Toast.makeText(this, "Введите необходимые данные!", Toast.LENGTH_SHORT).show()
+            "Существует" ->  Toast.makeText(this, "Студент уже существует!", Toast.LENGTH_SHORT).show()
+            "Добавлен" -> Toast.makeText(this, "Студент успешно добавлен!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun hideKeyboard(){
+        try {
+            val imm: InputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+        } catch (e: Exception) {
+        }
+    }
+
+
 }
